@@ -1,0 +1,84 @@
+import time
+import random
+
+# List of sample prompts for the typing test
+prompts = [
+    "The quick brown fox jumps over the lazy dog.",
+    "A journey of a thousand miles begins with a single step.",
+    "To be or not to be, that is the question.",
+    "All that glitters is not gold.",
+    "The only thing we have to fear is fear itself.",
+    "I think, therefore I am.",
+    "Time flies like an arrow; fruit flies like a banana.",
+    "The pen is mightier than the sword.",
+    "Elementary, my dear Watson.",
+    "To infinity and beyond!"
+]
+
+def get_random_prompt(prompts):
+    """Returns a random prompt from the list of prompts."""
+    return random.choice(prompts)
+
+def calculate_results(prompt, typed_text, start_time, end_time):
+    """Calculates and returns typing speed and accuracy."""
+    elapsed_time = end_time - start_time
+    prompt_length = len(prompt)
+    typed_length = len(typed_text)
+    cpm = (typed_length / elapsed_time) * 60
+    wpm = (len(typed_text.split()) / elapsed_time) * 60
+    correct_chars = sum(1 for a, b in zip(prompt, typed_text) if a == b)
+    accuracy = (correct_chars / prompt_length) * 100
+    return elapsed_time, cpm, wpm, accuracy
+
+def highlight_errors(prompt, typed_text):
+    """Highlights errors in the typed text."""
+    highlighted_text = []
+    for p_char, t_char in zip(prompt, typed_text):
+        if p_char == t_char:
+            highlighted_text.append(t_char)
+        else:
+            highlighted_text.append(f"[{t_char}]")
+    highlighted_text.append(typed_text[len(prompt):])
+    return ''.join(highlighted_text)
+
+def display_results(round_results):
+    """Displays the results of all rounds."""
+    for i, (elapsed_time, cpm, wpm, accuracy) in enumerate(round_results, 1):
+        print(f"\nResults for Round {i}:")
+        print(f"Time taken: {elapsed_time:.2f} seconds")
+        print(f"Characters per minute (CPM): {cpm:.2f}")
+        print(f"Words per minute (WPM): {wpm:.2f}")
+        print(f"Accuracy: {accuracy:.2f}%")
+
+def typing_test(num_rounds):
+    """Conducts the typing speed test over multiple rounds."""
+    round_results = []
+    for _ in range(num_rounds):
+        prompt = get_random_prompt(prompts)
+        
+        print("\nTyping Speed Test\n")
+        print("Type the following prompt as fast as you can:")
+        print("\n" + prompt + "\n")
+        
+        input("Press Enter when you are ready to start...")
+
+        start_time = time.time()
+        typed_text = input("\nStart typing:\n")
+        end_time = time.time()
+
+        elapsed_time, cpm, wpm, accuracy = calculate_results(prompt, typed_text, start_time, end_time)
+        round_results.append((elapsed_time, cpm, wpm, accuracy))
+
+        highlighted_text = highlight_errors(prompt, typed_text)
+        print("\nYour typing with highlighted errors:")
+        print(highlighted_text)
+
+    display_results(round_results)
+
+if __name__ == "__main__":
+    print("Welcome to the Speed Typing Test!")
+    try:
+        num_rounds = int(input("Enter the number of rounds you want to play: "))
+        typing_test(num_rounds)
+    except ValueError:
+        print("Invalid input. Please enter a number.")
